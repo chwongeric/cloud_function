@@ -1,20 +1,22 @@
 #!/usr/bin/python3
-# usage: $ ./es_test.py -i <elastic_search's IP> -p 9200
+# usage: $ ./es_test.py -i <elastic_search's IP> -p 9200 -k <uuid>
+# usage: $ ./es_test.py -i <elastic_search's IP> -p 9200 -s 100   (query 100 rec)
+# usage: $ ./es_test.py -i <elastic_search's IP> -p 9200 -c True  (clean all)
 import sys, argparse
 from elasticsearch import Elasticsearch#, RequestsHttpConnection
 import datetime, time
-CUSTOMER = 'acme'
 
 def main(argv):
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--ip", default="localhost")   
     parser.add_argument("-p", "--port", default="9200")
     parser.add_argument("-s", "--size", default="100")
+    parser.add_argument("-t", "--tenant", default="acme")
     parser.add_argument("-k", "--key", default="")
     parser.add_argument("-n", "--count", default=False)
     parser.add_argument("-c", "--clean", default=False)
     args = parser.parse_args()
-
+    CUSTOMER = args.tenant
     esinfo = {}
     esendpoint = args.ip
     es = Elasticsearch(
@@ -33,9 +35,11 @@ def main(argv):
         print(res)
         return
     elif args.count:
-        print(args.count)
-        res= es.search(index=CUSTOMER,body={'query':{'match_all':{}}},size=0)
-        print(res['hits']['total']['value'])
+        es.indices.refresh(CUSTOMER)
+        res= es.cat.count(CUSTOMER,params={'format': 'json'})
+        print(res[0]['count'])
+        #res= es.search(index=CUSTOMER,body={'query':{'match_all':{}}},size=0)
+        #print(res['hits']['total']['value'])
     elif args.key and len(args.key) > 0:
     	res= es.search(index=CUSTOMER,body={'query':{'match':{'_id':args.key}}})
     	if res['hits']['total']['value'] > 0:  # output each element
