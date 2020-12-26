@@ -12,6 +12,7 @@ cloud_logger.setLevel(logging.INFO)
 cloud_logger.addHandler(lg_handler)
 
 esendpoint = os.environ.get('ELASTICSEARCH_IP' ,'localhost')
+CUSTOMER = os.environ.get('CUSTOMER' ,'acme')
 OFFSET = int(os.environ.get('OFFSET_FROM_TODAY','0'))
 es = Elasticsearch(
     [{'host':esendpoint,'port':9200}],
@@ -25,16 +26,11 @@ es = Elasticsearch(
 esinfo = es.info()
 cloud_logger.info(esinfo)
 TODAY = str(datetime.datetime.utcnow()).split(' ')[0]   # date only
-es.indices.create(index='acme', ignore=400)  # create index - ignore if already created
+es.indices.create(index=CUSTOMER, ignore=400)  # create index - ignore if already created
 
 def updateInventory(items, date = TODAY):
     for item in items:
-        # res=es.get(index='acme',doc_type='inventory',id=i)
-        # print(res['_source'])
-        #print(date, item['key'])
-        # res = es.search(index='acme',body={'query':{'match':{'key':'9f7bba2f-51df-48fc-9da4-9bf5da67b152'}}})
-
-        res = es.search(index='acme',body={'query':{'match':{'_id':item['key']}}})
+        res = es.search(index=CUSTOMER,body={'query':{'match':{'_id':item['key']}}})
         cloud_logger.info(res)
         #print(res)
         if res['hits']['total']['value'] > 0:  # output each element
@@ -55,13 +51,13 @@ def updateInventory(items, date = TODAY):
             item['number_of_days_received'] = 1
             #print(item)
             #cloud_logger.info(item)
-            res = es.index(index='acme',doc_type='inventory',id=item['key'],body=item)   # index name lower case
+            res = es.index(index=CUSTOMER,doc_type='inventory',id=item['key'],body=item)   # index name lower case
             #print(res)
             #cloud_logger.info(res)
-            #res=es.get(index='acme',doc_type='inventory',id=item['key'])
+            #res=es.get(index=CUSTOMER,doc_type='inventory',id=item['key'])
             #cloud_logger.info(res)
             # print(res['_source'])            
-        # res=es.delete(index='acme',doc_type='inventory',id=i)
+        # res=es.delete(index=CUSTOMER,doc_type='inventory',id=i)
         # print(res['result'])
 
 def hello_pubsub(event, context):
@@ -73,10 +69,10 @@ def hello_pubsub(event, context):
     #print(event)
     inventory = json.loads(base64.b64decode(event['data']).decode('utf-8'))
     #print(inventory)
-    days = 1
+    days = 0  # for continuous prior dates testing 
     start_offset=OFFSET
     begin = time.time()
-    for day in range(days,0,-1):
+    for day in range(days,-1,-1):
         date = str(datetime.datetime.utcnow()-datetime.timedelta(days = start_offset)-datetime.timedelta(days = day)).split(' ')[0]   # date only
         if inventory:  
             updateInventory(items = inventory, date=date)
