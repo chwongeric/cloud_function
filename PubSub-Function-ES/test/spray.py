@@ -27,7 +27,7 @@ def main(argv):
         os.system(PUB_CMD)
         '''
         tmp = 'tmp-'+args.offset
-	CMD = "jq -c %s %s > %s"%("\'"+chunk+"\'",args.file,tmp)
+        CMD = "jq -c %s %s > %s"%("\'"+chunk+"\'",args.file,tmp)
         print(CMD)
         os.system(CMD)
 
