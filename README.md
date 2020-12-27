@@ -3,7 +3,7 @@
 
 
 ## Architecture
-![alt text](https://github.com/chwongeric/cloud_function/images/blob/main/es_cloud_func.png?raw=true)
+![alt text](https://github.com/chwongeric/cloud_function/blob/main/images/es_cloud_func.png?raw=true)
 
 ## Raw Data: json array
 > [{  “key” : “9f7bba2f-51df-48fc-9da4-9bf5da67b152”,  “name” : “AC Compressor Gasket”,  “quantity” : 7153},
