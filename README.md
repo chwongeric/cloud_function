@@ -6,13 +6,13 @@
 ![alt text](https://github.com/chwongeric/cloud_function/blob/main/images/es_cloud_func.png?raw=true)
 
 ## Raw Data: json array
-> [{  “key” : “9f7bba2f-51df-48fc-9da4-9bf5da67b152”,  “name” : “AC Compressor Gasket”,  “quantity” : 7153},
+> [{“key” : “9f7bba2f-51df-48fc-9da4-9bf5da67b152”,“name” : “AC Compressor Gasket”,“quantity” : 7153},
 > ...
 > ]
 
 
 ## DataSink: elasticsearch
-> `{  “key” : “9f7bba2f-51df-48fc-9da4-9bf5da67b152",  “name” : “AC Compressor Gasket”,  “quantity” : 512345,  “first_received” : “2019-07-09”,  “number_of_days_received” : 38,  “last_received” : “2020-09-17"}`
+> `{“key” : “9f7bba2f-51df-48fc-9da4-9bf5da67b152",“name” : “AC Compressor Gasket”,“quantity” : 512345,“first_received” : “2019-07-09”, “number_of_days_received” : 38, “last_received” : “2020-09-17"}`
 
 ## GCP Setup:
 * VPC (firewall):  
@@ -68,7 +68,7 @@
 
 `		$ ./es_test.py -i {Elasticsearch public IP} -p 9200 -n True`
 		
-		To cross check with a record can do following as example to query a specific key (UUID) against record in INVENTORY.json after running few days:
+  To cross check with a record can do following as example to query a specific key (UUID) against record in INVENTORY.json after running few days:
 		
 `		$ head -c 400 INVENTORY.json`
 		
